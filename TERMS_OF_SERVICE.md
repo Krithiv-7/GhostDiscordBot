@@ -14,6 +14,8 @@ Ghost Discord Bot ("the Bot") is a Discord bot that connects to the Ghost Conten
 - Content searching and browsing
 - Server-specific configurations
 
+**Ghost Discord Bot is an independent project and is not affiliated with, endorsed by, or sponsored by the Ghost Foundation. Ghost is a trademark of the Ghost Foundation.**
+
 ## 3. User Requirements and Conduct
 
 ### 3.1. Requirements
