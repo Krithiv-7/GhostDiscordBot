@@ -37,7 +37,7 @@ A powerful Discord bot that integrates with the Ghost Content API to automatical
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 16.0.0 or higher
+- Node.js 20.0.0 or higher (required for Discord API compatibility)
 - A Discord bot token from the [Discord Developer Portal](https://discord.com/developers/applications)
 - A Ghost site with Content API access (Content API is read-only and safe to use)
 
