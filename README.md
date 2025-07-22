@@ -9,30 +9,37 @@ A powerful Discord bot that integrates with the Ghost Content API to automatical
 - **Smart detection** - Identifies both new posts and updated existing posts
 - **Duplicate prevention** - Advanced caching system prevents duplicate notifications
 - **Flexible modes** - Choose between "New & Updated" or "New Posts Only"
+- **Optional announcements** - Configure whether to announce posts or just track them
 
 ### 🎯 Customizable Notifications
 - **Role pinging** - Optionally ping specific roles when new posts are published
 - **Beautiful embeds** - Rich embeds with post title, excerpt, author, and featured image
 - **Color coding** - Green embeds for new posts, yellow for updated posts
-- **Proper dates** - Shows actual publication dates instead of relative time
+- **Precise timestamps** - Shows exact date and time of publication/updates
 
 ### 🛠️ Easy Management
 - **Simple setup** - One command to get started
 - **Granular editing** - Modify individual settings without full reconfiguration
 - **Multi-server support** - Each Discord server has its own independent configuration
 - **Admin controls** - All management commands require "Manage Server" permissions
+- **Status command** - View your current bot configuration and status
 
 ### 🔍 Content Discovery
 - **Search functionality** - Find posts by title across your Ghost site
 - **Tag browsing** - Browse posts by tags with smart autocomplete
 - **API diagnostics** - Test connectivity to your Ghost site
 
+### 🔒 Security
+- **Secure API storage** - API keys are hashed with SHA-256 before storage
+- **No plaintext credentials** - Sensitive data is never stored in plaintext
+- **Permission validation** - Proper checking of bot permissions in channels
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 16.0.0 or higher
 - A Discord bot token from the [Discord Developer Portal](https://discord.com/developers/applications)
-- A Ghost site with Content API access
+- A Ghost site with Content API access (Content API is read-only and safe to use)
 
 ### Installation
 
@@ -71,17 +78,22 @@ A powerful Discord bot that integrates with the Ghost Content API to automatical
 ### Bot Permissions
 
 When inviting the bot to your server, make sure it has these permissions:
-- `Send Messages`
-- `Use Slash Commands`
+- `View Channels`
+- `Send Messages` 
+- `Manage Messages`
+- `Add Reactions`
 - `Embed Links`
 - `Attach Files`
 - `Read Message History`
+- `Use Slash Commands`
+- `Use External Emojis/Stickers`
+- `Moderate Members`
 
-**Permission Integer:** `2147485696`
+**Permission Integer:** `1127001566080064`
 
 ### Invite Link Template
 ```
-https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=2147485696&scope=bot%20applications.commands
+https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=1127001566080064&scope=bot%20applications.commands
 ```
 
 ## 📖 Commands
@@ -104,6 +116,8 @@ https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=21
 | `/edit-setup` | Edit individual configuration settings |
 | `/test-run` | Manually trigger a check for new posts |
 | `/remove` | Remove server configuration and data |
+| `/announcements` | Toggle announcement functionality on/off |
+| `/status` | View current bot configuration and status |
 
 ## ⚙️ Configuration
 
@@ -112,13 +126,14 @@ https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=21
 Use the `/setup` command to configure the bot for your server:
 
 ```
-/setup api_url:https://yoursite.com api_key:your_content_api_key channel:#your-channel mode:default ping_role:@subscribers
+/setup api_url:https://yoursite.com api_key:your_content_api_key channel:#your-channel announcements:true mode:default ping_role:@subscribers
 ```
 
 **Parameters:**
 - `api_url` - Your Ghost site URL (e.g., `https://yoursite.com`)
 - `api_key` - Your Ghost Content API Key
-- `channel` - Discord channel where posts will be sent
+- `channel` - Discord channel where posts will be sent (optional if announcements disabled)
+- `announcements` (optional) - Enable/disable announcement posts (`true`/`false`, default: `true`)
 - `mode` (optional) - `default` (new & updated) or `new_only`
 - `ping_role` (optional) - Role to ping when new posts are published
 
@@ -127,51 +142,66 @@ Use the `/setup` command to configure the bot for your server:
 1. Go to your Ghost Admin panel
 2. Navigate to **Settings** → **Integrations**
 3. Click **Add custom integration**
-4. Copy the **Content API Key**
+4. Copy the **Content API Key** (not the Admin API Key)
+
+> **Important:** Always use the Content API Key, which is read-only by design. Never use your Admin API Key with this bot.
 
 ### Editing Configuration
 
 Use `/edit-setup` to modify individual settings:
 
 - `/edit-setup url` - Update Ghost site URL
-- `/edit-setup key` - Update API key
+- `/edit-setup key` - Update API key (securely stored with SHA-256 hashing)
 - `/edit-setup channel` - Change posting channel
 - `/edit-setup mode` - Switch between posting modes
 - `/edit-setup ping-role` - Add/remove role pinging
+- `/announcements toggle` - Enable or disable post announcements
 
 ## 🏗️ Project Structure
 
 ```
 GhostDiscordBot/
-├── commands/           # Slash command files
-│   ├── setup.js       # Initial configuration
-│   ├── edit-setup.js  # Settings management
-│   ├── help.js        # Command help
-│   ├── ping.js        # Latency check
-│   ├── search.js      # Post search
-│   ├── tag.js         # Tag browsing
-│   ├── test-run.js    # Manual post check
-│   ├── remove.js      # Data removal
-│   └── ping-ghost.js  # API diagnostics
-├── database.js        # SQLite database management
-├── deploy-commands.js # Command deployment script
-├── ghost.js          # Ghost API integration
-├── index.js          # Main bot file
-├── scheduler.js      # Automatic post checking
-├── package.json      # Dependencies
-├── .env.example      # Environment template
-├── .gitignore        # Git exclusions
-└── README.md         # This file
+├── commands/               # Slash command files organized by category
+│   ├── admin/             # Admin-only commands
+│   │   ├── setup.js       # Initial configuration
+│   │   ├── edit-setup.js  # Settings management
+│   │   ├── announcements.js # Toggle announcements
+│   │   ├── test-run.js    # Manual post check
+│   │   ├── remove.js      # Data removal
+│   │   └── ping-ghost.js  # API diagnostics
+│   ├── general/          # General commands
+│   │   ├── help.js       # Command help
+│   │   ├── ping.js       # Latency check
+│   │   └── status.js     # Bot status info
+│   └── search/          # Search-related commands
+│       ├── search.js    # Post search
+│       └── tag.js       # Tag browsing
+├── handlers/            # Event and command handling
+│   ├── mainHandler.js   # Main initialization
+│   ├── commandHandler.js # Command processing
+│   ├── eventHandler.js  # Event management
+│   └── logger.js        # Logging system
+├── database.js          # SQLite database management with secure storage
+├── ghostApi.js          # Ghost Content API integration
+├── ghostApiSecure.js    # Secure API handling
+├── deploy-commands.js   # Command deployment script
+├── index.js             # Main bot file
+├── scheduler.js         # Automatic post checking
+├── package.json         # Dependencies
+├── .env.example         # Environment template
+├── .gitignore           # Git exclusions
+└── README.md            # This file
 ```
 
 ## 🗄️ Database
 
 The bot uses SQLite to store:
-- **Server configurations** - API keys, channels, settings per Discord server
+- **Server configurations** - Securely hashed API keys, channels, settings per Discord server
 - **Published posts cache** - Prevents duplicate notifications
 - **Optimized indexes** - Fast queries even with large datasets
+- **Automated migrations** - Smooth transitions between versions
 
-Database file: `ghost.db` (automatically created)
+Database file: `ghost.db` (automatically created in the `data` directory)
 
 ## 🔧 Development
 
@@ -216,6 +246,8 @@ If you encounter any issues or have questions:
 - Built with [discord.js](https://discord.js.org/)
 - Powered by [Ghost Content API](https://ghost.org/docs/content-api/)
 - Database powered by [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)
+- Logging system with [winston](https://github.com/winstonjs/winston)
+- Security with Node.js [crypto](https://nodejs.org/api/crypto.html) module
 
 ---
 

@@ -28,7 +28,7 @@ async function checkPosts(client, guildId = null, manual = false) {
         sent: 0,
         errors: 0
     };
-    
+
     for (const guildConfig of guilds) {
         // Skip invalid configurations or those with no API setup
         if (!guildConfig || !guildConfig.url || !guildConfig.apiKey) continue;
@@ -85,7 +85,7 @@ async function checkPosts(client, guildId = null, manual = false) {
                                     iconURL: post.primary_author?.profile_image, 
                                     url: post.primary_author?.url 
                                 })
-                                .setFooter({ text: `Published on ${publishedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} at ${publishedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}` })
+                                .setFooter({ text: `Published on ${publishedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}` })
                                 .setTimestamp(publishedDate)
                                 .setDescription(post.excerpt || 'No excerpt available');
                                 
@@ -136,7 +136,7 @@ async function checkPosts(client, guildId = null, manual = false) {
                                     iconURL: post.primary_author?.profile_image, 
                                     url: post.primary_author?.url 
                                 })
-                                .setFooter({ text: `Updated on ${updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} at ${updatedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}` })
+                                .setFooter({ text: `Updated on ${updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}` })
                                 .setTimestamp(updatedDate)
                                 .setDescription(post.excerpt || 'No excerpt available');
                                 
@@ -145,49 +145,17 @@ async function checkPosts(client, guildId = null, manual = false) {
                             }
                             
                             const messageContent = guildConfig.roleId ? `<@&${guildConfig.roleId}>` : '';
-                            
-                            await channel.send({ content: messageContent, embeds: [embed] });
-                            stats.sent++;
-                            
-                            logger.info(`Posted updated article "${post.title}" to ${guildConfig.id}`);
-                            
-                            // Update the record
-                            db.setPostAsPublished(
-                                post.id, 
-                                guildConfig.id, 
-                                new Date(post.published_at).getTime(), 
-                                new Date(post.updated_at).getTime()
-                            );
-                        }
-                    } catch (error) {
-                        logger.error(`Error posting updated article to guild ${guildConfig.id}`, error);
-                        stats.errors++;
-                    }
+                    await channel.send({ content: messageContent, embeds: [embed] });
+                    db.setPostAsPublished(post.id, guildConfig.id, new Date(post.published_at).getTime(), new Date(post.updated_at).getTime());
                 }
             }
-        } catch (error) {
-            logger.error(`Error checking posts for guild ${guildConfig.id}`, error);
-            stats.errors++;
         }
     }
-    
-    logger.info(`Post check completed: ${stats.checked} guilds, ${stats.newPosts} new posts, ${stats.updatedPosts} updated posts, ${stats.sent} sent, ${stats.errors} errors`);
-    return stats;
 }
 
-/**
- * Start the scheduler
- * @param {Object} client - Discord.js client
- */
 function start(client) {
-    // Initial check on startup
     checkPosts(client);
-    
-    // Schedule regular checks every 5 minutes
-    const checkInterval = 5 * 60 * 1000; // 5 minutes in milliseconds
-    setInterval(() => checkPosts(client), checkInterval);
-    
-    logger.info(`Post scheduler started, checking every ${checkInterval/60000} minutes`);
+    setInterval(() => checkPosts(client), 5 * 60 * 1000); // Every 5 minutes
 }
 
 module.exports = { start, checkPosts };

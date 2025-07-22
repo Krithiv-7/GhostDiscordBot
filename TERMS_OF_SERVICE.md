@@ -38,7 +38,8 @@ You agree not to:
 - You are responsible for the security of your Ghost Content API keys.
 - Never share your API keys with anyone else.
 - The Bot stores API keys to function but implements security measures to protect them.
-- We recommend using Content API keys with read-only permissions.
+- Always use the Ghost Content API key - NEVER use your Admin API key with this bot.
+- The Ghost Content API is already read-only by design, making it safe for third-party integrations.
 
 ### 4.2. Data Security
 - The Bot stores the minimum information necessary to function.

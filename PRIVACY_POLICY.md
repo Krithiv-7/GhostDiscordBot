@@ -56,7 +56,8 @@ We do not sell, trade, or otherwise transfer your information to outside parties
 - The Bot only uses API keys for their intended purpose (accessing Ghost content)
 
 ### 5.2. Recommendations
-- We recommend using a Ghost Content API key with read-only permissions
+- Always use the Ghost Content API key (never the Admin API key)
+- The Content API is read-only by design and safer to use with third-party integrations
 - Never share your API keys with others
 - If you suspect your keys are compromised, revoke them immediately in your Ghost admin panel
 
