@@ -36,6 +36,13 @@ A powerful Discord bot that integrates with the Ghost Content API to automatical
 
 ## 🚀 Quick Start
 
+### Official Hosted Version
+The bot is officially hosted and available for immediate use! Simply visit:
+
+**[ghostdc.krithiv.dev](https://ghostdc.krithiv.dev)**
+
+Use this quick link to add the bot to your server without setting up your own instance. Perfect for testing or production use.
+
 ### Prerequisites
 - Node.js 20.0.0 or higher (required for Discord API compatibility)
 - A Discord bot token from the [Discord Developer Portal](https://discord.com/developers/applications)
@@ -95,6 +102,8 @@ When inviting the bot to your server, make sure it has these permissions:
 ```
 https://discord.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&permissions=1127001566080064&scope=bot%20applications.commands
 ```
+
+> **Note:** For the easiest setup, simply use the official hosted version at [ghostdc.krithiv.dev](https://ghostdc.krithiv.dev)
 
 ## 📖 Commands
 
@@ -204,6 +213,16 @@ The bot uses SQLite to store:
 Database file: `ghost.db` (automatically created in the `data` directory)
 
 ## 🔧 Development
+
+### Repository Branches
+
+The repository follows a three-branch development workflow:
+
+- **`stagging`** - Early state of development with potential security issues. Not recommended for production use.
+- **`testing`** - Internal testing and bug fixing phase. More stable but still not ready for production.
+- **`main`** - Final, stable version that has been thoroughly tested with minimal bugs or security issues. This is the production-ready branch.
+
+> **Important:** The official hosted version at [ghostdc.krithiv.dev](https://ghostdc.krithiv.dev) only deploys from the `main` branch to ensure stability and security.
 
 ### Running in Development Mode
 
